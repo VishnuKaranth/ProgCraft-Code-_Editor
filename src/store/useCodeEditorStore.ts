@@ -2,108 +2,112 @@ import { create } from "zustand";
 import { LANGUAGE_CONFIG } from "@/app/(root)/_constants";
 import { CodeEditorState } from "@/types";
 import { Monaco } from "@monaco-editor/react";
-import { constants } from "fs";
 
 const getInitialState = () => {
-
-    // If we are in the browser, return default state
-    if(typeof window === "undefined") {
-        return{
-            language: "python",
-            fontSize: 16,
-            theme: "vs-dark",
-        }
-    }
-
-    const savedLanguage = localStorage.getItem("editor-language") || "python";
-    const savedTheme = localStorage.getItem("editor-theme") || "vs-dark";
-    const savedFontSize = localStorage.getItem("editor-font-size") || "16";
-
+  if (typeof window === "undefined") {
     return {
-        language: savedLanguage,
-        theme: savedTheme,
-        fontSize: Number(savedFontSize),
-    }
-}
+      language: "python",
+      fontSize: 16,
+      theme: "vs-dark",
+    };
+  }
 
-export const useCodeEditorStore = create<CodeEditorState>((set,get) => {
-    const initialState = getInitialState();
-    return {
-        ...initialState,
+  const savedLanguage = localStorage.getItem("editor-language") || "python";
+  const savedTheme = localStorage.getItem("editor-theme") || "vs-dark";
+  const savedFontSize = localStorage.getItem("editor-font-size") || "16";
+
+  return {
+    language: savedLanguage,
+    theme: savedTheme,
+    fontSize: Number(savedFontSize),
+  };
+};
+
+export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
+  const initialState = getInitialState();
+  return {
+    ...initialState,
+    output: "",
+    isRunning: false,
+    error: null,
+    editor: null,
+    executionResult: null,
+    stdin: "",
+
+    setStdin: (stdin: string) => set({ stdin }),
+
+    getCode: () => get().editor?.getValue() || "",
+
+    setEditor: (editor: Monaco) => {
+      const savedCode = localStorage.getItem(`editor-code-${get().language}`);
+      if (savedCode) editor.setValue(savedCode);
+      set({ editor });
+    },
+    setTheme: (theme: string) => {
+      localStorage.setItem("editor-theme", theme);
+      set({ theme });
+    },
+
+    setFontSize: (fontSize: number) => {
+      localStorage.setItem("editor-font-size", String(fontSize));
+      set({ fontSize });
+    },
+
+    setLanguage: (language: string) => {
+      const currentCode = get().editor?.getValue();
+      if (currentCode) {
+        localStorage.setItem(`editor-code-${get().language}`, currentCode);
+      }
+
+      localStorage.setItem("editor-language", language);
+
+      set({
+        language,
         output: "",
-        isRunning: false,
         error: null,
-        editor: null,
-        executionResult: null,
+      });
+    },
+    runCode: async () => {
+      const { language, getCode, stdin } = get();
+      const code = getCode();
 
-        getCode: () => get().editor?.getValue() || "",
-        
-        setEditor: (editor: Monaco) => {
-            const savedCode = localStorage.getItem(`editor-code-${get().language}`)
-            if(savedCode) editor.setValue(savedCode);
-            set({editor});
-        },
-        setTheme: (theme: string) => {
-            localStorage.setItem("editor-theme", theme);
-            set({theme});
-        },
+      if (!code) {
+        set({ error: "Please enter some code to run." });
+        return;
+      }
+      set({
+        isRunning: true,
+        error: null,
+        output: "",
+      });
 
-        setFontSize: (fontSize: number) => {
-            localStorage.setItem("editor-font-size", String(fontSize));
-            set({fontSize});
-        },
+      try {
+        const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
+        const response = await fetch(
+          "https://emkc.org/api/v2/piston/execute",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              language: runtime.language,
+              version: runtime.version,
+              files: [{ content: code }],
+              stdin: stdin,
+            }),
+          }
+        );
+        const data = await response.json();
 
-        setLanguage: (language: string) => {
-            const currentCode = get().editor?.getValue();
-            if (currentCode) {
-                localStorage.setItem(`editor-code-${get().language}`, currentCode);
-            }
-
-            localStorage.setItem("editor-language", language);
-
-            set({
-                language,
-                output: "",
-                error: null,
-            });
-        },
-        runCode: async () => {
-            const { language, getCode } = get();
-            const code = getCode();
-
-            if (!code) {
-                set({ error: "Please enter some code to run." });
-                return;
-            }
-            set({
-                isRunning: true,
-                error: null,
-                output: "",
-            });
-
-            try {
-                const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
-                const response = await fetch("https://emkc.org/api/v2/piston/execute", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        language: runtime.language,
-                        version: runtime.version,
-                        files: [{ content: code }],
-          }),
-        });const data = await response.json();
-
-        console.log("data back from piston:", data);
-
-        // handle API-level erros
         if (data.message) {
-          set({ error: data.message, executionResult: { code, output: "", error: data.message } });
+          set({
+            error: data.message,
+            executionResult: { code, output: "", error: data.message },
+          });
           return;
         }
 
-        // handle compilation errors
         if (data.compile && data.compile.code !== 0) {
           const error = data.compile.stderr || data.compile.output;
           set({
@@ -130,7 +134,6 @@ export const useCodeEditorStore = create<CodeEditorState>((set,get) => {
           return;
         }
 
-        // if we get here, execution was successful
         const output = data.run.output;
 
         set({
@@ -155,4 +158,5 @@ export const useCodeEditorStore = create<CodeEditorState>((set,get) => {
   };
 });
 
-export const getExecutionResult = () => useCodeEditorStore.getState().executionResult;
+export const getExecutionResult = () =>
+  useCodeEditorStore.getState().executionResult;

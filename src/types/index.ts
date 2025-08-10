@@ -46,6 +46,7 @@ export interface CodeEditorState {
   fontSize: number;
   editor: Monaco | null;
   executionResult: ExecutionResult | null;
+  stdin: string;
 
   setEditor: (editor: Monaco) => void;
   getCode: () => string;
@@ -53,6 +54,7 @@ export interface CodeEditorState {
   setTheme: (theme: string) => void;
   setFontSize: (fontSize: number) => void;
   runCode: () => Promise<void>;
+  setStdin: (stdin: string) => void;
 }
 
 export interface Snippet {
