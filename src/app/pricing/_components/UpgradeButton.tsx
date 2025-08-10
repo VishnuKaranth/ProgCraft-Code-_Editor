@@ -13,7 +13,7 @@ export default function UpgradeButton() {
         hover:from-blue-600 hover:to-blue-700 transition-all"
     >
       <Zap className="w-5 h-5" />
-      Click Here to upgrade to Pro
+      Click Here to upgrade to Pro.
     </Link>
   );
 }

@@ -33,6 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-b from-gray-900 to-blue-950 text-gray-100 flex flex-col`}>
           <ConvexClientProvider>{children}</ConvexClientProvider>
           <Footer />
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </body>
     </html>
     </ClerkProvider>
