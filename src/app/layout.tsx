@@ -19,6 +19,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "ProgCraft - Multipurpose Code Editor",
   description: "An multi-purpose code editor for all your coding needs.",
+  icons: {
+    icon: "/favicon.gif",
+  }
 };
 
 export default function RootLayout({
