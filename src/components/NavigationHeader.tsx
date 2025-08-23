@@ -1,6 +1,6 @@
-import HeaderProfileBtn from "@/app/(root)/_components/HeaderProfileBtn";
+import HeaderProfileBtn from "@/components/(root)/HeaderProfileBtn";
 import { SignedOut } from "@clerk/nextjs";
-import { Blocks, Code2, Sparkles } from "lucide-react";
+import { Code2, Sparkles, Terminal } from "lucide-react";
 import Link from "next/link";
 
 function NavigationHeader() {
@@ -20,7 +20,7 @@ function NavigationHeader() {
 
               {/* Logo */}
               <div className="relative bg-gradient-to-br from-[#1a1a2e] to-[#0a0a0f] p-2 rounded-xl ring-1 ring-white/10 group-hover:ring-white/20 transition-all">
-                <Blocks className="w-6 h-6 text-blue-400 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500" />
+                <Terminal className="w-6 h-6 text-blue-400 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500" />
               </div>
 
               <div className="relative">
@@ -28,7 +28,7 @@ function NavigationHeader() {
                   className="block text-lg font-semibold bg-gradient-to-r
                  from-blue-400 via-blue-300 to-purple-400 text-transparent bg-clip-text"
                 >
-                  CodeCraft
+                  ProgCraft
                 </span>
                 <span className="block text-xs text-blue-400/60 font-medium">
                   Interactive Code Editor

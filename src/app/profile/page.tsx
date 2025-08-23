@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import NavigationHeader from "@/components/NavigationHeader";
-import ProfileHeader from "./_components/ProfileHeader";
-import ProfileHeaderSkeleton from "./_components/ProfileHeaderSkeleton";
+import ProfileHeader from "../../components/profile/ProfileHeader";
+import ProfileHeaderSkeleton from "../../components/profile/ProfileHeaderSkeleton";
 import { ChevronRight, Clock, Code, ListVideo, Loader2, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import StarButton from "@/components/StarButton";
-import CodeBlock from "./_components/CodeBlock";
+import CodeBlock from "../../components/profile/CodeBlock";
 
 const TABS = [
   {

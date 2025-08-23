@@ -3,12 +3,12 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
-import SnippetsPageSkeleton from "./_components/SnippetPageSkeleton";
+import SnippetsPageSkeleton from "../../components/snippets/SnippetPageSkeleton";
 import NavigationHeader from "@/components/NavigationHeader";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Code, Grid, Layers, Search, Tag, X } from "lucide-react";
-import SnippetCard from "./_components/SnippetCard";
+import SnippetCard from "../../components/snippets/SnippetCard";
 
 function SnippetsPage() {
   const snippets = useQuery(api.snippets.getSnippets);

@@ -4,6 +4,7 @@ import { useCodeEditorStore } from "@/store/useCodeEditorStore";
 import { AlertTriangle, CheckCircle, Clock, Copy, Terminal } from "lucide-react";
 import { useState } from "react";
 import RunningCodeSkeleton from "./RunningCodeSkeleton";
+import InputPanel from "@/components/(root)/InputButon";
 
 function OutputPanel() {
   const { output, error, isRunning } = useCodeEditorStore();
@@ -82,11 +83,17 @@ function OutputPanel() {
               </div>
               <p className="text-center">Run your code to see the output here...</p>
             </div>
+            
           )}
         </div>
       </div>
+      <div className="mt-4">
+      <InputPanel />
+      </div>
     </div>
+    
   );
 }
+
 
 export default OutputPanel;
